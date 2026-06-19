@@ -4,7 +4,6 @@ export default function ConfirmModal({
   title,
   message,
   confirmLabel,
-  variant,
   onCancel,
   onConfirm,
 }) {
@@ -20,11 +19,7 @@ export default function ConfirmModal({
         </button>
         <button
           onClick={onConfirm}
-          className={
-            variant === "accent"
-              ? "inline-flex h-12 items-center justify-center border border-[var(--accent)] bg-[var(--accent)] px-6 text-[0.9rem] font-medium uppercase tracking-[0.12em] text-[var(--accent-foreground)] hover:bg-[var(--foreground)] hover:border-[var(--foreground)]"
-              : "inline-flex h-12 items-center justify-center border border-[var(--foreground)] bg-[var(--foreground)] px-6 text-[0.9rem] font-medium uppercase tracking-[0.12em] text-[var(--surface)] hover:bg-[var(--accent)] hover:border-[var(--accent)]"
-          }
+          className="inline-flex h-12 items-center justify-center border border-[var(--accent)] bg-[var(--accent)] px-6 text-[0.9rem] font-medium uppercase tracking-[0.12em] text-[var(--accent-foreground)] hover:bg-[var(--foreground)] hover:border-[var(--foreground)]"
         >
           {confirmLabel}
         </button>

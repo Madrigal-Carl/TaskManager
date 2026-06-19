@@ -311,7 +311,6 @@ export default function App() {
           title="Delete Task"
           message={`Are you sure you want to delete "${deleteTask.title}"? This action cannot be undone.`}
           confirmLabel="Delete Task"
-          variant="accent"
           onCancel={() => setDeleteTask(null)}
           onConfirm={() => handleDelete(deleteTask.id)}
         />
@@ -321,7 +320,6 @@ export default function App() {
           title="Mark Task as Complete"
           message="Are you sure you want to mark this task as completed?"
           confirmLabel="Mark as Complete"
-          variant="accent"
           onCancel={() => setMarkCompleteTask(null)}
           onConfirm={() => handleMarkComplete(markCompleteTask.id)}
         />
@@ -331,7 +329,6 @@ export default function App() {
           title="Mark Task as Incomplete"
           message="Are you sure you want to mark this task as incomplete?"
           confirmLabel="Mark as Incomplete"
-          variant="outline"
           onCancel={() => setMarkIncompleteTask(null)}
           onConfirm={() => handleMarkIncomplete(markIncompleteTask.id)}
         />
