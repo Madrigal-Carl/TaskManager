@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { useTasks, useCreateTask, useUpdateTask } from "@hooks/useTaskQueries";
+import {
+  useTasks,
+  useCreateTask,
+  useUpdateTask,
+  useDeleteTask,
+} from "@hooks/useTaskQueries";
 import {
   Search,
   Pencil,
@@ -35,6 +40,7 @@ export default function App() {
   const totalPages = pagination?.pages ?? 1;
   const createTask = useCreateTask(() => setAddOpen(false));
   const updateTask = useUpdateTask(() => setEditTask(null));
+  const deleteTaskMutation = useDeleteTask(() => setDeleteTask(null));
 
   const [addOpen, setAddOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
@@ -58,8 +64,7 @@ export default function App() {
   }
 
   function handleDelete(id) {
-    setTasks((t) => t.filter((x) => x.id !== id));
-    setDeleteTask(null);
+    deleteTaskMutation.mutate(id);
   }
 
   function handleMarkComplete(id) {
@@ -238,9 +243,11 @@ export default function App() {
         <ConfirmModal
           title="Delete Task"
           message={`Are you sure you want to delete "${deleteTask.title}"? This action cannot be undone.`}
-          confirmLabel="Delete Task"
+          confirmLabel={
+            deleteTaskMutation.isPending ? "Deleting…" : "Delete Task"
+          }
           onCancel={() => setDeleteTask(null)}
-          onConfirm={() => handleDelete(deleteTask.id)}
+          onConfirm={() => handleDelete(deleteTask._id)}
         />
       )}
       {markCompleteTask && (
