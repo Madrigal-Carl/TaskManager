@@ -9,9 +9,24 @@ import taskRoutes from "./routes/task.routes.js";
 
 const app = express();
 
+const allowedOrigins = [process.env.CLIENT_URL]
+    .filter(Boolean)
+    .map((url) => url.replace(/\/+$/, ""));
+
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: (origin, callback) => {
+            if (!origin) {
+                return callback(null, true);
+            }
+
+            const normalizedOrigin = origin.replace(/\/+$/, "");
+            if (allowedOrigins.includes(normalizedOrigin)) {
+                return callback(null, true);
+            }
+
+            callback(new Error(`Origin ${origin} not allowed by CORS`));
+        },
         credentials: true,
     }),
 );
