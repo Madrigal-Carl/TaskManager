@@ -4,7 +4,7 @@ import {
     createTask,
     updateTask,
     deleteTask,
-} from "@/services/task.service";
+} from "@services/task.service";
 
 export const useTasks = ({ page, limit, search, status, priority }) => {
     return useQuery({

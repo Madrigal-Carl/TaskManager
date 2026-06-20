@@ -1,4 +1,4 @@
-import api from "@/api/axios";
+import api from "@api/axios";
 
 export async function getTasks({ page, limit, search, status, priority }) {
     const res = await api.get("/tasks", {
