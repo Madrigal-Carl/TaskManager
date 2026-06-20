@@ -22,14 +22,17 @@ const seedTasks = async () => {
         const tasks = [];
 
         const priorities = ["low", "medium", "high"];
-        const statuses = ["pending", "incomplete", "complete"];
 
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 10; i++) {
             tasks.push({
                 title: faker.lorem.sentence(5),
                 description: faker.lorem.paragraph(),
                 priority: faker.helpers.arrayElement(priorities),
-                status: faker.helpers.arrayElement(statuses),
+                status: faker.helpers.weightedArrayElement([
+                    { value: "pending", weight: 50 },
+                    { value: "complete", weight: 25 },
+                    { value: "incomplete", weight: 25 },
+                ]),
                 dueDate: faker.date.soon({ days: 30 }),
             });
         }
