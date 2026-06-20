@@ -7,6 +7,10 @@ This repository contains a full-stack task management application with a Node.js
 - `backend/` - Express API server
 - `frontend/` - React application built with Vite
 
+## Live Demo
+
+- https://task-manager-iota-peach.vercel.app/
+
 ## Prerequisites
 
 - Node.js 18+ installed
