@@ -1,10 +1,13 @@
-export default function Field({ label, children }) {
+export default function Field({ label, children, error }) {
   return (
-    <label className="flex flex-col gap-2">
-      <span className="text-[0.75rem] font-medium uppercase tracking-[0.18em] text-[color:var(--secondary)]">
+    <div className="flex flex-col gap-2">
+      <label className="text-[0.75rem] font-medium uppercase tracking-[0.18em] text-[color:var(--secondary)]">
         {label}
-      </span>
+      </label>
       {children}
-    </label>
+      {error && (
+        <p className="text-[0.8rem] text-[color:var(--primary)]">{error}</p>
+      )}
+    </div>
   );
 }

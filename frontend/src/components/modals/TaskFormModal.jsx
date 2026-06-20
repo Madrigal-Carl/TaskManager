@@ -1,3 +1,6 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { taskSchema } from "@validators/task.validator";
 import { useState } from "react";
 import ModalShell from "./ModalShell";
 import { Field } from "@components/ui";
@@ -9,56 +12,57 @@ export default function TaskFormModal({
   initial,
   onClose,
   onSubmit,
+  isLoading,
 }) {
-  const [t, setT] = useState(initial?.title ?? "");
-  const [d, setD] = useState(initial?.description ?? "");
-  const [p, setP] = useState(initial?.priority ?? "Medium");
-  const [due, setDue] = useState(initial?.dueDate ?? "");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(taskSchema),
+    defaultValues: {
+      title: initial?.title ?? "",
+      description: initial?.description ?? "",
+      priority: initial?.priority?.toLowerCase() ?? "medium",
+      dueDate: initial?.dueDate?.slice(0, 10) ?? "",
+    },
+  });
+
+  function onValid(data) {
+    onSubmit({
+      ...data,
+      dueDate: new Date(data.dueDate).toISOString(),
+    });
+  }
 
   return (
     <ModalShell onClose={onClose} title={title}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!t.trim() || !due) return;
-          onSubmit({
-            title: t.trim(),
-            description: d.trim(),
-            priority: p,
-            dueDate: due,
-          });
-        }}
-        className="flex flex-col gap-5"
-      >
-        <Field label="Task Title">
+      <form onSubmit={handleSubmit(onValid)} className="flex flex-col gap-5">
+        <Field label="Task Title" error={errors.title?.message}>
           <input
-            value={t}
-            onChange={(e) => setT(e.target.value)}
-            required
+            {...register("title")}
             placeholder="e.g. Review Q4 roadmap"
             className="h-12 w-full border border-foreground bg-surface px-4 text-[0.95rem] outline-none"
           />
         </Field>
-        <Field label="Description">
+        <Field label="Description" error={errors.description?.message}>
           <textarea
-            value={d}
-            onChange={(e) => setD(e.target.value)}
+            {...register("description")}
             rows={4}
             placeholder="Add a short description"
             className="w-full resize-none border border-foreground bg-surface p-4 text-[0.95rem] outline-none"
           />
         </Field>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Field label="Priority">
+          <Field label="Priority" error={errors.priority?.message}>
             <div className="relative">
               <select
-                value={p}
-                onChange={(e) => setP(e.target.value)}
+                {...register("priority")}
                 className="h-12 w-full appearance-none border border-foreground bg-surface px-4 pr-10 text-[0.95rem] outline-none"
               >
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
               </select>
 
               <ChevronDown
@@ -67,12 +71,10 @@ export default function TaskFormModal({
               />
             </div>
           </Field>
-          <Field label="Due Date">
+          <Field label="Due Date" error={errors.dueDate?.message}>
             <input
               type="date"
-              value={due}
-              onChange={(e) => setDue(e.target.value)}
-              required
+              {...register("dueDate")}
               className="h-12 w-full border border-foreground bg-surface px-4 text-[0.95rem] outline-none"
             />
           </Field>
@@ -90,7 +92,7 @@ export default function TaskFormModal({
             type="submit"
             className="inline-flex h-12 items-center justify-center border border-[color:var(--accent)] bg-[color:var(--accent)] px-6 text-[0.9rem] font-medium uppercase tracking-[0.12em] text-[color:var(--accent-foreground)] hover:bg-black hover:border-black"
           >
-            {submitLabel}
+            {isLoading ? "Saving…" : submitLabel}
           </button>
         </div>
       </form>

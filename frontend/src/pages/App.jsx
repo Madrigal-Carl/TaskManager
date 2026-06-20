@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTasks } from "@hooks/useTaskQueries";
+import { useTasks, useCreateTask } from "@hooks/useTaskQueries";
 import {
   Search,
   Pencil,
@@ -33,6 +33,7 @@ export default function App() {
   const tasks = data?.tasks ?? [];
   const pagination = data?.pagination;
   const totalPages = pagination?.pages ?? 1;
+  const createTask = useCreateTask(() => setAddOpen(false));
 
   const [addOpen, setAddOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
@@ -48,11 +49,7 @@ export default function App() {
   };
 
   function handleCreate(data) {
-    setTasks((t) => [
-      { ...data, id: crypto.randomUUID(), status: "Pending" },
-      ...t,
-    ]);
-    setAddOpen(false);
+    createTask.mutate(data);
   }
 
   function handleUpdate(updated) {
@@ -222,8 +219,9 @@ export default function App() {
         <TaskFormModal
           title="Add New Task"
           submitLabel="Create Task"
+          isLoading={createTask.isPending}
           onClose={() => setAddOpen(false)}
-          onSubmit={(d) => handleCreate(d)}
+          onSubmit={handleCreate}
         />
       )}
       {editTask && (

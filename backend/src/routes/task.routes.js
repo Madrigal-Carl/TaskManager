@@ -5,7 +5,7 @@ import {
     updateTask,
     deleteTask,
 } from "../controllers/task.controller.js";
-import { validateTask } from "../validator/task.validator.js";
+import { validateTask } from "../validators/task.validator.js";
 
 const router = express.Router();
 
