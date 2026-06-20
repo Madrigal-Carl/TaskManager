@@ -66,3 +66,37 @@ export const deleteTaskService = async (id) => {
 
     return task;
 };
+
+export const markTaskCompleteService = async (id) => {
+    const task = await Task.findById(id);
+
+    if (!task) {
+        throw new Error("Task not found");
+    }
+
+    if (task.status !== "pending") {
+        throw new Error("Only pending tasks can be marked as complete");
+    }
+
+    task.status = "complete";
+    await task.save();
+
+    return task;
+};
+
+export const markTaskIncompleteService = async (id) => {
+    const task = await Task.findById(id);
+
+    if (!task) {
+        throw new Error("Task not found");
+    }
+
+    if (task.status !== "pending") {
+        throw new Error("Only pending tasks can be marked as incomplete");
+    }
+
+    task.status = "incomplete";
+    await task.save();
+
+    return task;
+};

@@ -4,6 +4,8 @@ import {
   useCreateTask,
   useUpdateTask,
   useDeleteTask,
+  useMarkTaskComplete,
+  useMarkTaskIncomplete,
 } from "@hooks/useTaskQueries";
 import {
   Search,
@@ -41,6 +43,10 @@ export default function App() {
   const createTask = useCreateTask(() => setAddOpen(false));
   const updateTask = useUpdateTask(() => setEditTask(null));
   const deleteTaskMutation = useDeleteTask(() => setDeleteTask(null));
+  const markComplete = useMarkTaskComplete(() => setMarkCompleteTask(null));
+  const markIncomplete = useMarkTaskIncomplete(() =>
+    setMarkIncompleteTask(null),
+  );
 
   const [addOpen, setAddOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
@@ -68,17 +74,11 @@ export default function App() {
   }
 
   function handleMarkComplete(id) {
-    setTasks((t) =>
-      t.map((x) => (x.id === id ? { ...x, status: "Completed" } : x)),
-    );
-    setMarkCompleteTask(null);
+    markComplete.mutate(id);
   }
 
   function handleMarkIncomplete(id) {
-    setTasks((t) =>
-      t.map((x) => (x.id === id ? { ...x, status: "Incomplete" } : x)),
-    );
-    setMarkIncompleteTask(null);
+    markIncomplete.mutate(id);
   }
 
   return (
@@ -254,18 +254,20 @@ export default function App() {
         <ConfirmModal
           title="Mark Task as Complete"
           message="Are you sure you want to mark this task as completed?"
-          confirmLabel="Mark as Complete"
+          confirmLabel={markComplete.isPending ? "Saving…" : "Mark as Complete"}
           onCancel={() => setMarkCompleteTask(null)}
-          onConfirm={() => handleMarkComplete(markCompleteTask.id)}
+          onConfirm={() => handleMarkComplete(markCompleteTask._id)}
         />
       )}
       {markIncompleteTask && (
         <ConfirmModal
           title="Mark Task as Incomplete"
           message="Are you sure you want to mark this task as incomplete?"
-          confirmLabel="Mark as Incomplete"
+          confirmLabel={
+            markIncomplete.isPending ? "Saving…" : "Mark as Incomplete"
+          }
           onCancel={() => setMarkIncompleteTask(null)}
-          onConfirm={() => handleMarkIncomplete(markIncompleteTask.id)}
+          onConfirm={() => handleMarkIncomplete(markIncompleteTask._id)}
         />
       )}
     </div>

@@ -4,6 +4,8 @@ import {
     createTask,
     updateTask,
     deleteTask,
+    markTaskComplete,
+    markTaskIncomplete,
 } from "@services/task.service";
 
 export const useTasks = ({ page, limit, search, status, priority }) => {
@@ -20,9 +22,7 @@ export const useCreateTask = (onSuccess) => {
     return useMutation({
         mutationFn: createTask,
         onSuccess: (...args) => {
-            queryClient.invalidateQueries({
-                queryKey: ["tasks"],
-            });
+            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false });
 
             onSuccess?.(...args);
         },
@@ -35,9 +35,7 @@ export const useUpdateTask = (onSuccess) => {
     return useMutation({
         mutationFn: ({ id, data }) => updateTask(id, data),
         onSuccess: (...args) => {
-            queryClient.invalidateQueries({
-                queryKey: ["tasks"],
-            });
+            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false });
 
             onSuccess?.(...args);
         },
@@ -50,9 +48,33 @@ export const useDeleteTask = (onSuccess) => {
     return useMutation({
         mutationFn: deleteTask,
         onSuccess: (...args) => {
-            queryClient.invalidateQueries({
-                queryKey: ["tasks"],
-            });
+            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false });
+
+            onSuccess?.(...args);
+        },
+    });
+};
+
+export const useMarkTaskComplete = (onSuccess) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: markTaskComplete,
+        onSuccess: (...args) => {
+            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false });
+
+            onSuccess?.(...args);
+        },
+    });
+};
+
+export const useMarkTaskIncomplete = (onSuccess) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: markTaskIncomplete,
+        onSuccess: (...args) => {
+            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false });
 
             onSuccess?.(...args);
         },

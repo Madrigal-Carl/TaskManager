@@ -31,3 +31,13 @@ export async function deleteTask(id) {
 
     return res.data;
 }
+
+export async function markTaskComplete(id) {
+    const res = await api.patch(`/tasks/${id}/complete`, { status: "complete" });
+    return res.data;
+}
+
+export async function markTaskIncomplete(id) {
+    const res = await api.patch(`/tasks/${id}/incomplete`, { status: "incomplete" });
+    return res.data;
+}

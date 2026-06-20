@@ -38,3 +38,24 @@ export const validateTask = (req, res, next) => {
     req.body = result.data;
     next();
 };
+
+const taskStatusSchema = z.object({
+    status: z.enum(["incomplete", "complete"], {
+        required_error: "Status is required",
+        message: "Status must be incomplete, or complete",
+    }),
+});
+
+export const validateTaskStatus = (req, res, next) => {
+    const result = taskStatusSchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            message: "Validation error",
+            errors: result.error.issues,
+        });
+    }
+
+    req.body = result.data;
+    next();
+};
