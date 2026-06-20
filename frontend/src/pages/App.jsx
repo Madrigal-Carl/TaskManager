@@ -55,10 +55,10 @@ export default function App() {
   const [markIncompleteTask, setMarkIncompleteTask] = useState(null);
 
   const stats = {
-    total: pagination?.total ?? 0,
-    pending: 6,
-    incomplete: 9,
-    completed: 12,
+    total: data?.statusCounts?.total ?? 0,
+    pending: data?.statusCounts?.pending ?? 0,
+    incomplete: data?.statusCounts?.incomplete ?? 0,
+    completed: data?.statusCounts?.complete ?? 0,
   };
 
   function handleCreate(data) {
@@ -145,7 +145,7 @@ export default function App() {
               setStatusFilter(v);
               setPage(1);
             }}
-            options={["All", "Pending", "Incomplete", "Completed"]}
+            options={["All", "Pending", "Incomplete", "Complete"]}
             label="Status"
           />
         </section>

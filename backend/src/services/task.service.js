@@ -20,9 +20,13 @@ export const getAllTasks = async ({ page, limit, search, status, priority }) => 
 
     const skip = (page - 1) * limit;
 
-    const [tasks, total] = await Promise.all([
+    const [tasks, total, totalCount, pendingCount, completeCount, incompleteCount] = await Promise.all([
         Task.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
         Task.countDocuments(filter),
+        Task.countDocuments({}),
+        Task.countDocuments({ status: "pending" }),
+        Task.countDocuments({ status: "complete" }),
+        Task.countDocuments({ status: "incomplete" }),
     ]);
 
     return {
@@ -32,6 +36,12 @@ export const getAllTasks = async ({ page, limit, search, status, priority }) => 
             limit,
             total,
             pages: Math.ceil(total / limit),
+        },
+        statusCounts: {
+            total: totalCount,
+            pending: pendingCount,
+            complete: completeCount,
+            incomplete: incompleteCount,
         },
     };
 };

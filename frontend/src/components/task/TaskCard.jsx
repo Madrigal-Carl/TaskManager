@@ -9,7 +9,7 @@ export default function TaskCard({
   onMarkComplete,
   onMarkIncomplete,
 }) {
-  const isCompleted = task.status === "complete";
+  const isPending = task.status === "pending";
   return (
     <li className="group grid grid-cols-1 gap-6 border border-foreground bg-surface p-6 transition-colors hover:bg-[#FAFAFA] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_var(--foreground)] lg:grid-cols-12">
       <div className="lg:col-span-7">
@@ -21,7 +21,7 @@ export default function TaskCard({
           <div className="min-w-0">
             <h3
               className={`font-display text-[1.125rem] font-bold leading-snug tracking-tight ${
-                isCompleted ? "line-through opacity-60" : ""
+                !isPending ? "line-through opacity-60" : ""
               }`}
             >
               {task.title}
