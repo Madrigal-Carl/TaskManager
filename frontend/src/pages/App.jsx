@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useTasks } from "@hooks/useTaskQueries";
 import {
   Search,
   Pencil,
@@ -14,80 +15,24 @@ import { Field, KpiCard, Select, Pagination } from "@components/ui";
 import TaskCard from "@components/task/TaskCard";
 import { ConfirmModal, TaskFormModal } from "@components/modals";
 
-const seedTasks = [
-  {
-    id: "1",
-    title: "Finalize Q4 product roadmap",
-    description:
-      "Consolidate feedback from design, engineering and growth into a single shared document for the leadership review.",
-    priority: "High",
-    status: "Pending",
-    dueDate: "2026-06-22",
-  },
-  {
-    id: "2",
-    title: "Review onboarding flow analytics",
-    description:
-      "Audit funnel drop-off between step 2 and 3, identify the highest-impact friction point and draft two A/B test hypotheses.",
-    priority: "Medium",
-    status: "Incomplete",
-    dueDate: "2026-06-25",
-  },
-  {
-    id: "3",
-    title: "Ship dark mode toggle",
-    description:
-      "Implement system-aware theme switching across the dashboard, including persistence and updated brand tokens.",
-    priority: "Low",
-    status: "Completed",
-    dueDate: "2026-06-10",
-  },
-  {
-    id: "4",
-    title: "Migrate billing service to v2 API",
-    description:
-      "Replace deprecated endpoints, add retries with exponential backoff, and re-run the regression suite end to end.",
-    priority: "High",
-    status: "Pending",
-    dueDate: "2026-06-30",
-  },
-  {
-    id: "5",
-    title: "Write design system contribution guide",
-    description:
-      "Document the component proposal process, review checklist and accessibility requirements for cross-team contributors.",
-    priority: "Medium",
-    status: "Completed",
-    dueDate: "2026-06-08",
-  },
-  {
-    id: "6",
-    title: "Interview three platform engineering candidates",
-    description:
-      "Coordinate scheduling, share scorecards in advance, and submit feedback within 24 hours of each loop.",
-    priority: "Low",
-    status: "Incomplete",
-    dueDate: "2026-07-02",
-  },
-  {
-    id: "7",
-    title: "Plan customer advisory board agenda",
-    description:
-      "Draft topics, send pre-reads, and align with sales on the three accounts we want to highlight live.",
-    priority: "Medium",
-    status: "Pending",
-    dueDate: "2026-07-05",
-  },
-];
-
-const PAGE_SIZE = 5;
-
 export default function App() {
-  const [tasks, setTasks] = useState(seedTasks);
   const [query, setQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [page, setPage] = useState(1);
+
+  const { data, isLoading, isError } = useTasks({
+    page,
+    limit: 5,
+    search: query || undefined,
+    status: statusFilter !== "All" ? statusFilter.toLowerCase() : undefined,
+    priority:
+      priorityFilter !== "All" ? priorityFilter.toLowerCase() : undefined,
+  });
+
+  const tasks = data?.tasks ?? [];
+  const pagination = data?.pagination;
+  const totalPages = pagination?.pages ?? 1;
 
   const [addOpen, setAddOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
@@ -95,38 +40,12 @@ export default function App() {
   const [markCompleteTask, setMarkCompleteTask] = useState(null);
   const [markIncompleteTask, setMarkIncompleteTask] = useState(null);
 
-  const filtered = useMemo(() => {
-    return tasks.filter((t) => {
-      const q = query.trim().toLowerCase();
-      if (
-        q &&
-        !t.title.toLowerCase().includes(q) &&
-        !t.description.toLowerCase().includes(q)
-      )
-        return false;
-      if (priorityFilter !== "All" && t.priority !== priorityFilter)
-        return false;
-      if (statusFilter !== "All" && t.status !== statusFilter) return false;
-      return true;
-    });
-  }, [tasks, query, priorityFilter, statusFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageItems = filtered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
-
-  const stats = useMemo(
-    () => ({
-      total: tasks.length,
-      pending: tasks.filter((t) => t.status === "Pending").length,
-      incomplete: tasks.filter((t) => t.status === "Incomplete").length,
-      completed: tasks.filter((t) => t.status === "Completed").length,
-    }),
-    [tasks],
-  );
+  const stats = {
+    total: pagination?.total ?? 0,
+    pending: 6,
+    incomplete: 9,
+    completed: 12,
+  };
 
   function handleCreate(data) {
     setTasks((t) => [
@@ -247,11 +166,25 @@ export default function App() {
               Tasks
             </h2>
             <p className="text-[0.75rem] font-medium uppercase tracking-[0.16em] text-[color:var(--secondary)]">
-              {filtered.length} {filtered.length === 1 ? "result" : "results"}
+              {pagination?.total ?? 0}{" "}
+              {pagination?.total === 1 ? "result" : "results"}
             </p>
           </div>
 
-          {pageItems.length === 0 ? (
+          {isLoading ? (
+            <div className="border border-foreground bg-surface p-12 text-center">
+              <p className="font-display text-xl font-bold">Loading tasks…</p>
+            </div>
+          ) : isError ? (
+            <div className="border border-foreground bg-surface p-12 text-center">
+              <p className="font-display text-xl font-bold">
+                Failed to load tasks
+              </p>
+              <p className="mt-2 text-[0.95rem] text-[color:var(--secondary)]">
+                Please check your connection and try again.
+              </p>
+            </div>
+          ) : tasks.length === 0 ? (
             <div className="border border-foreground bg-surface p-12 text-center">
               <p className="font-display text-xl font-bold">No tasks found</p>
               <p className="mt-2 text-[0.95rem] text-[color:var(--secondary)]">
@@ -260,9 +193,9 @@ export default function App() {
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
-              {pageItems.map((t) => (
+              {tasks.map((t) => (
                 <TaskCard
-                  key={t.id}
+                  key={t._id}
                   task={t}
                   onEdit={() => setEditTask(t)}
                   onDelete={() => setDeleteTask(t)}
@@ -275,12 +208,8 @@ export default function App() {
         </section>
 
         {/* PAGINATION */}
-        {filtered.length > 0 && (
-          <Pagination
-            page={currentPage}
-            totalPages={totalPages}
-            onChange={setPage}
-          />
+        {!isLoading && tasks.length > 0 && (
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         )}
 
         <footer className="mt-16 border-t border-foreground pt-6 text-[0.75rem] uppercase tracking-[0.16em] text-[color:var(--secondary)]">

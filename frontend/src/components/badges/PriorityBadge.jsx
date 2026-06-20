@@ -1,8 +1,8 @@
 export default function PriorityBadge({ priority }) {
   const dot =
-    priority === "High"
+    priority === "high"
       ? "bg-[color:var(--accent)]"
-      : priority === "Medium"
+      : priority === "medium"
         ? "bg-[var(--foreground)]"
         : "bg-[color:var(--secondary)]";
   return (
