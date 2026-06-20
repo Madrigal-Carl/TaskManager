@@ -1,4 +1,4 @@
-import { Check, Circle, Pencil, Trash2, Dot } from "lucide-react";
+import { Check, X, Pencil, Trash2, Dot } from "lucide-react";
 import { formatDate } from "@lib/utils";
 import { PriorityBadge, StatusBadge } from "@components/badges";
 
@@ -43,20 +43,24 @@ export default function TaskCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-          <button
-            onClick={onMarkComplete}
-            aria-label="Mark as complete"
-            className="grid h-10 w-10 place-items-center border border-[color:var(--accent)] bg-[color:var(--accent)] text-[color:var(--accent-foreground)] hover:bg-black hover:border-black"
-          >
-            <Check size={14} strokeWidth={2.5} />
-          </button>
-          <button
-            onClick={onMarkIncomplete}
-            aria-label="Mark as incomplete"
-            className="grid h-10 w-10 place-items-center border border-foreground bg-surface hover:bg-[color:var(--foreground)] hover:text-[color:var(--surface)]"
-          >
-            <Circle size={14} strokeWidth={2.5} />
-          </button>
+          {task.status === "pending" && (
+            <>
+              <button
+                onClick={onMarkComplete}
+                aria-label="Mark as complete"
+                className="grid h-10 w-10 place-items-center border border-[color:var(--accent)] bg-[color:var(--accent)] text-[color:var(--accent-foreground)] hover:bg-black hover:border-black"
+              >
+                <Check size={14} strokeWidth={2.5} />
+              </button>
+              <button
+                onClick={onMarkIncomplete}
+                aria-label="Mark as incomplete"
+                className="grid h-10 w-10 place-items-center border border-foreground bg-surface hover:bg-[color:var(--foreground)] hover:text-[color:var(--surface)]"
+              >
+                <X size={14} strokeWidth={2.5} />
+              </button>
+            </>
+          )}
           <button
             onClick={onEdit}
             aria-label="Edit task"
