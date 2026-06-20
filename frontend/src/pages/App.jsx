@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTasks, useCreateTask } from "@hooks/useTaskQueries";
+import { useTasks, useCreateTask, useUpdateTask } from "@hooks/useTaskQueries";
 import {
   Search,
   Pencil,
@@ -34,6 +34,7 @@ export default function App() {
   const pagination = data?.pagination;
   const totalPages = pagination?.pages ?? 1;
   const createTask = useCreateTask(() => setAddOpen(false));
+  const updateTask = useUpdateTask(() => setEditTask(null));
 
   const [addOpen, setAddOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
@@ -52,9 +53,8 @@ export default function App() {
     createTask.mutate(data);
   }
 
-  function handleUpdate(updated) {
-    setTasks((t) => t.map((x) => (x.id === updated.id ? updated : x)));
-    setEditTask(null);
+  function handleUpdate(data) {
+    updateTask.mutate({ id: editTask._id, data });
   }
 
   function handleDelete(id) {
@@ -229,8 +229,9 @@ export default function App() {
           title="Edit Task"
           submitLabel="Save Changes"
           initial={editTask}
+          isLoading={updateTask.isPending}
           onClose={() => setEditTask(null)}
-          onSubmit={(d) => handleUpdate({ ...editTask, ...d })}
+          onSubmit={handleUpdate}
         />
       )}
       {deleteTask && (
