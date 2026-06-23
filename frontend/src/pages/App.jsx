@@ -19,12 +19,17 @@ import {
 } from "lucide-react";
 import { Field, KpiCard, Select, Pagination } from "@components/ui";
 import TaskCard from "@components/task/TaskCard";
-import { ConfirmModal, TaskFormModal } from "@components/modals";
+import {
+  ConfirmModal,
+  DeleteCountdownModal,
+  TaskFormModal,
+} from "@components/modals";
 
 export default function App() {
   const [query, setQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [dateFilter, setDateFilter] = useState("");
   const [page, setPage] = useState(1);
 
   const { data, isLoading, isError } = useTasks({
@@ -34,6 +39,7 @@ export default function App() {
     status: statusFilter !== "All" ? statusFilter.toLowerCase() : undefined,
     priority:
       priorityFilter !== "All" ? priorityFilter.toLowerCase() : undefined,
+    date: dateFilter ?? undefined,
   });
 
   const tasks = data?.tasks ?? [];
@@ -50,6 +56,7 @@ export default function App() {
   const [addOpen, setAddOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [deleteTask, setDeleteTask] = useState(null);
+  const [pendingDeleteTask, setPendingDeleteTask] = useState(null);
   const [markCompleteTask, setMarkCompleteTask] = useState(null);
   const [markIncompleteTask, setMarkIncompleteTask] = useState(null);
 
@@ -111,7 +118,7 @@ export default function App() {
 
         {/* SEARCH + FILTERS */}
         <section className="mt-10 grid grid-cols-1 gap-3 lg:grid-cols-12">
-          <div className="relative lg:col-span-7">
+          <div className="relative lg:col-span-5">
             <Search
               size={16}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--secondary)]"
@@ -146,6 +153,15 @@ export default function App() {
             }}
             options={["All", "Pending", "Incomplete", "Complete"]}
             label="Status"
+          />
+          <input
+            className="lg:col-span-2 border border-foreground bg-surface px-4 pr-10 text-[0.95rem] outline-none"
+            type="date"
+            value={dateFilter}
+            onChange={(v) => {
+              setDateFilter(v.target.value);
+              setPage(1);
+            }}
           />
         </section>
 
@@ -241,12 +257,25 @@ export default function App() {
       {deleteTask && (
         <ConfirmModal
           title="Delete Task"
-          message={`Are you sure you want to delete "${deleteTask.title}"? This action cannot be undone.`}
-          confirmLabel={
-            deleteTaskMutation.isPending ? "Deleting…" : "Delete Task"
-          }
+          message={`Are you sure you want to delete "${deleteTask.title}"?`}
+          confirmLabel="Continue"
           onCancel={() => setDeleteTask(null)}
-          onConfirm={() => handleDelete(deleteTask._id)}
+          onConfirm={() => {
+            setPendingDeleteTask(deleteTask);
+            setDeleteTask(null);
+          }}
+        />
+      )}
+      {pendingDeleteTask && (
+        <DeleteCountdownModal
+          title="Deleting Task"
+          message={`"${pendingDeleteTask.title}" will be deleted soon`}
+          seconds={5}
+          onCancel={() => setPendingDeleteTask(null)}
+          onProceed={() => {
+            handleDelete(pendingDeleteTask._id);
+            setPendingDeleteTask(null);
+          }}
         />
       )}
       {markCompleteTask && (

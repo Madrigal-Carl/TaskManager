@@ -1,6 +1,6 @@
 import api from "@api/axios";
 
-export async function getTasks({ page, limit, search, status, priority }) {
+export async function getTasks({ page, limit, search, status, priority, date }) {
     const res = await api.get("/tasks", {
         params: {
             page,
@@ -8,6 +8,7 @@ export async function getTasks({ page, limit, search, status, priority }) {
             search,
             status,
             priority,
+            date
         },
     });
 

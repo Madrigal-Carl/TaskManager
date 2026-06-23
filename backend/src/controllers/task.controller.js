@@ -14,6 +14,7 @@ export const getTasks = asyncHandler(async (req, res) => {
         search,
         status,
         priority,
+        date,
     } = req.query;
 
     const result = await getAllTasks({
@@ -22,6 +23,7 @@ export const getTasks = asyncHandler(async (req, res) => {
         search,
         status,
         priority,
+        date
     });
 
     return res.json(result);

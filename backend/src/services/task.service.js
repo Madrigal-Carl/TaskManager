@@ -1,6 +1,6 @@
 import Task from "../models/task.model.js";
 
-export const getAllTasks = async ({ page, limit, search, status, priority }) => {
+export const getAllTasks = async ({ page, limit, search, status, priority, date }) => {
     const filter = {};
 
     if (search) {
@@ -16,6 +16,17 @@ export const getAllTasks = async ({ page, limit, search, status, priority }) => 
 
     if (priority) {
         filter.priority = priority;
+    }
+
+    if (date) {
+        const startDate = new Date(date);
+        const endDate = new Date(date);
+
+        endDate.setDate(endDate.getDate() + 1);
+        filter.dueDate = {
+            $gte: startDate,
+            $lte: endDate,
+        };
     }
 
     const skip = (page - 1) * limit;

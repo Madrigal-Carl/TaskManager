@@ -7,10 +7,10 @@ import {
     markTask,
 } from "@services/task.service";
 
-export const useTasks = ({ page, limit, search, status, priority }) => {
+export const useTasks = ({ page, limit, search, status, priority, date }) => {
     return useQuery({
-        queryKey: ["tasks", { page, limit, search, status, priority }],
-        queryFn: () => getTasks({ page, limit, search, status, priority }),
+        queryKey: ["tasks", { page, limit, search, status, priority, date }],
+        queryFn: () => getTasks({ page, limit, search, status, priority, date }),
         keepPreviousData: true,
     });
 };
