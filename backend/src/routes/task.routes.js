@@ -4,8 +4,7 @@ import {
     createTask,
     updateTask,
     deleteTask,
-    markTaskComplete,
-    markTaskIncomplete,
+    markTask,
 } from "../controllers/task.controller.js";
 import { validateTask, validateTaskStatus } from "../validators/task.validator.js";
 
@@ -19,8 +18,6 @@ router.put("/:id", validateTask, updateTask);
 
 router.delete("/:id", deleteTask);
 
-router.patch("/:id/complete", validateTaskStatus, markTaskComplete);
-
-router.patch("/:id/incomplete", validateTaskStatus, markTaskIncomplete);
+router.patch("/:id/status", validateTaskStatus, markTask);
 
 export default router;

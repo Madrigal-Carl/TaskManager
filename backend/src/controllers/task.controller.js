@@ -4,8 +4,7 @@ import {
     createTaskService,
     updateTaskService,
     deleteTaskService,
-    markTaskCompleteService,
-    markTaskIncompleteService
+    markTaskService,
 } from "../services/task.service.js";
 
 export const getTasks = asyncHandler(async (req, res) => {
@@ -54,20 +53,11 @@ export const deleteTask = asyncHandler(async (req, res) => {
     });
 });
 
-export const markTaskComplete = asyncHandler(async (req, res) => {
-    const task = await markTaskCompleteService(req.params.id);
+export const markTask = asyncHandler(async (req, res) => {
+    const task = await markTaskService(req.params.id, req.body.status);
 
     return res.json({
-        message: "Task marked as complete",
-        task,
-    });
-});
-
-export const markTaskIncomplete = asyncHandler(async (req, res) => {
-    const task = await markTaskIncompleteService(req.params.id);
-
-    return res.json({
-        message: "Task marked as incomplete",
+        message: `Task marked as ${task.status}`,
         task,
     });
 });

@@ -32,12 +32,10 @@ export async function deleteTask(id) {
     return res.data;
 }
 
-export async function markTaskComplete(id) {
-    const res = await api.patch(`/tasks/${id}/complete`, { status: "complete" });
-    return res.data;
-}
+export async function markTask(id, status) {
+    const res = await api.patch(`/tasks/${id}/status`, {
+        status,
+    });
 
-export async function markTaskIncomplete(id) {
-    const res = await api.patch(`/tasks/${id}/incomplete`, { status: "incomplete" });
     return res.data;
 }

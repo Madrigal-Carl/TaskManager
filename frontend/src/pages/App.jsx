@@ -4,8 +4,7 @@ import {
   useCreateTask,
   useUpdateTask,
   useDeleteTask,
-  useMarkTaskComplete,
-  useMarkTaskIncomplete,
+  useMarkTask,
 } from "@hooks/useTaskQueries";
 import {
   Search,
@@ -43,10 +42,10 @@ export default function App() {
   const createTask = useCreateTask(() => setAddOpen(false));
   const updateTask = useUpdateTask(() => setEditTask(null));
   const deleteTaskMutation = useDeleteTask(() => setDeleteTask(null));
-  const markComplete = useMarkTaskComplete(() => setMarkCompleteTask(null));
-  const markIncomplete = useMarkTaskIncomplete(() =>
-    setMarkIncompleteTask(null),
-  );
+  const markTask = useMarkTask(() => {
+    setMarkCompleteTask(null);
+    setMarkIncompleteTask(null);
+  });
 
   const [addOpen, setAddOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
@@ -74,11 +73,11 @@ export default function App() {
   }
 
   function handleMarkComplete(id) {
-    markComplete.mutate(id);
+    markTask.mutate({ id, status: "complete" });
   }
 
   function handleMarkIncomplete(id) {
-    markIncomplete.mutate(id);
+    markTask.mutate({ id, status: "incomplete" });
   }
 
   return (
@@ -254,7 +253,7 @@ export default function App() {
         <ConfirmModal
           title="Mark Task as Complete"
           message="Are you sure you want to mark this task as completed?"
-          confirmLabel={markComplete.isPending ? "Saving…" : "Mark as Complete"}
+          confirmLabel={markTask.isPending ? "Saving…" : "Mark as Complete"}
           onCancel={() => setMarkCompleteTask(null)}
           onConfirm={() => handleMarkComplete(markCompleteTask._id)}
         />
@@ -263,9 +262,7 @@ export default function App() {
         <ConfirmModal
           title="Mark Task as Incomplete"
           message="Are you sure you want to mark this task as incomplete?"
-          confirmLabel={
-            markIncomplete.isPending ? "Saving…" : "Mark as Incomplete"
-          }
+          confirmLabel={markTask.isPending ? "Saving…" : "Mark as Incomplete"}
           onCancel={() => setMarkIncompleteTask(null)}
           onConfirm={() => handleMarkIncomplete(markIncompleteTask._id)}
         />

@@ -4,8 +4,7 @@ import {
     createTask,
     updateTask,
     deleteTask,
-    markTaskComplete,
-    markTaskIncomplete,
+    markTask,
 } from "@services/task.service";
 
 export const useTasks = ({ page, limit, search, status, priority }) => {
@@ -55,26 +54,13 @@ export const useDeleteTask = (onSuccess) => {
     });
 };
 
-export const useMarkTaskComplete = (onSuccess) => {
+export const useMarkTask = (onSuccess) => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: markTaskComplete,
+        mutationFn: ({ id, status }) => markTask(id, status),
         onSuccess: (...args) => {
-            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false });
-
-            onSuccess?.(...args);
-        },
-    });
-};
-
-export const useMarkTaskIncomplete = (onSuccess) => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: markTaskIncomplete,
-        onSuccess: (...args) => {
-            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false });
+            queryClient.invalidateQueries({ queryKey: ["tasks"], exact: false, });
 
             onSuccess?.(...args);
         },
